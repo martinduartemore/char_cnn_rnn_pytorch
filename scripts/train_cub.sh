@@ -1,0 +1,11 @@
+python3 train_sje.py \
+    --seed 123 \
+    --dataset birds \
+    --model_type icml \
+    --data_dir /A/martin/datasets/birds_dataset/cvpr2016_cub \
+    --train_split trainval \
+    --learning_rate 0.0007 \
+    --symmetric 1 \
+    --epochs 200 \
+    --checkpoint_dir ckpt \
+    --save_file sje_cub_c10_hybrid

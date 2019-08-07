@@ -1,2 +1,5 @@
 torch
 torchfile
+tensorboard
+# TODO: remove future after pytorch fixes: No module named 'past'
+future
