@@ -1,4 +1,4 @@
-python3 train_sje.py \
+python3 sje_train.py \
     --seed 123 \
     --dataset birds \
     --model_type icml \

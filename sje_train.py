@@ -69,7 +69,7 @@ def main(args):
 
     os.makedirs(args.checkpoint_dir, exist_ok=True)
     timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-    model_name = 'lm_{}_{:.5f}_{}_{}_{}.t7'.format(args.save_file, args.learning_rate,
+    model_name = 'lm_{}_{:.5f}_{}_{}_{}.pth'.format(args.save_file, args.learning_rate,
             args.symmetric, args.train_split, timestamp)
     ckpt_path = os.path.join(args.checkpoint_dir, model_name)
     writer = SummaryWriter(args.checkpoint_dir)
