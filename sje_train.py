@@ -26,7 +26,8 @@ def structured_joint_embedding_loss(feat1, feat2):
     # calculate costs
     cost = (1 + scores - diagonal).clamp(min=0) # (B, B)
     # clear diagonals (matching pairs are not used in loss computation)
-    cost[torch.eye(cost.size(0)).bool()] = 0 # (B, B)
+    #cost[torch.eye(cost.size(0)).bool()] = 0 # (B, B) # for torch==1.2.0
+    cost[torch.eye(cost.size(0), dtype=torch.uint8)] = 0 # (B, B)
     # sum and average costs
     denom = cost.size(0) * cost.size(1)
     loss = cost.sum() / denom
