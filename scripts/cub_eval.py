@@ -7,4 +7,4 @@ python3 sje_eval.py \
     --num_txts_eval 0 \
     --print_class_stats True \
     --batch_size 40 \
-    --model_path ckpt/lm_sje_cub_c10_hybrid_0.00070_1_trainval_2019_08_06_20_01_55.pth
+    --model_path ckpt/sje_cub_c10_hybrid/sje_cub_c10_hybrid_0.00070_1_trainval_2019_08_12_18_24_51.pth

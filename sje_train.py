@@ -10,26 +10,8 @@ import torch
 from dataset import MultimodalDataset
 from torch.utils.data import DataLoader
 
+from utils import rng_init, init_weights
 import char_cnn_rnn as ccr
-
-
-
-def rng_init(seed):
-    random.seed(seed)
-    #np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-
-
-
-def init_weights(m):
-    if isinstance(m, torch.nn.Linear):
-        torch.nn.init.uniform_(m.weight, a=-0.08, b=0.08)
-        torch.nn.init.uniform_(m.bias, a=-0.08, b=0.08)
-    elif isinstance(m, torch.nn.Conv1d):
-        torch.nn.init.uniform_(m.weight, a=-0.08, b=0.08)
-        torch.nn.init.uniform_(m.bias, a=-0.08, b=0.08)
 
 
 
@@ -44,7 +26,7 @@ def structured_joint_embedding_loss(feat1, feat2):
     # calculate costs
     cost = (1 + scores - diagonal).clamp(min=0) # (B, B)
     # clear diagonals (matching pairs are not used in loss computation)
-    cost[torch.eye(cost.size(0), dtype=torch.uint8)] = 0 # (B, B)
+    cost[torch.eye(cost.size(0)).bool()] = 0 # (B, B)
     # sum and average costs
     denom = cost.size(0) * cost.size(1)
     loss = cost.sum() / denom
@@ -67,12 +49,12 @@ def main(args):
     loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
     loader_len = len(loader)
 
-    os.makedirs(args.checkpoint_dir, exist_ok=True)
+    os.makedirs(os.path.join(args.checkpoint_dir, args.save_file), exist_ok=True)
     timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-    model_name = 'lm_{}_{:.5f}_{}_{}_{}.pth'.format(args.save_file, args.learning_rate,
+    model_name = '{}_{:.5f}_{}_{}_{}.pth'.format(args.save_file, args.learning_rate,
             args.symmetric, args.train_split, timestamp)
-    ckpt_path = os.path.join(args.checkpoint_dir, model_name)
-    writer = SummaryWriter(args.checkpoint_dir)
+    ckpt_path = os.path.join(args.checkpoint_dir, args.save_file, model_name)
+    writer = SummaryWriter(os.path.join(args.checkpoint_dir, args.save_file))
 
     # TODO: add more customization to model creation
     net_txt = ccr.char_cnn_rnn(args.dataset, args.model_type).to(device)

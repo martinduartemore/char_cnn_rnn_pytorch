@@ -1,5 +1,6 @@
 torch
 torchfile
 tensorboard
-# TODO: remove future after pytorch fixes: No module named 'past'
+tqdm
+# TODO: remove future after PyTorch fixes: No module named 'past' error for tensorboard
 future

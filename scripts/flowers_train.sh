@@ -1,0 +1,11 @@
+python3 sje_train.py \
+    --seed 123 \
+    --dataset flowers \
+    --model_type cvpr \
+    --data_dir /A/martin/datasets/flowers_dataset/cvpr2016_flowers \
+    --train_split trainval \
+    --learning_rate 0.0007 \
+    --symmetric 1 \
+    --epochs 200 \
+    --checkpoint_dir ckpt \
+    --save_file sje_flowers_c10_hybrid2

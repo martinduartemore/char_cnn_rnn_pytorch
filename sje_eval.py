@@ -9,6 +9,7 @@ import torch
 import torchfile
 from torch.utils.data import DataLoader
 
+from utils import rng_init
 import char_cnn_rnn as ccr
 
 
@@ -121,20 +122,11 @@ def eval_retrieval(cls_feats_img, cls_feats_txt, cls_list):
 
 
 
-def rng_init(seed):
-    random.seed(seed)
-    #np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-
-
-
 def main(args):
     rng_init(args.seed)
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     net_txt = ccr.char_cnn_rnn(args.dataset, args.model_type)
-    net_txt.load_state_dict(torch.load(args.model_path))
+    net_txt.load_state_dict(torch.load(args.model_path, map_location=device))
     net_txt = net_txt.to(device)
     net_txt.eval()
 
