@@ -136,13 +136,13 @@ if __name__ == '__main__':
 
     parser.add_argument('--epochs', type=int,
             default=300,
-            help='Number of full passes through the training data')
+            help='Number of epochs')
     parser.add_argument('--batch_size', type=int,
             default=40,
             help='Training batch size')
-    parser.add_argument('--symmetric', type=int,
-            choices=[0,1], default=1,
-            help='Whether to use symmetric form of SJE')
+    parser.add_argument('--symmetric', type=bool,
+            default=True,
+            help='Whether or not to use symmetric form of SJE')
     parser.add_argument('--learning_rate', type=float,
             default=0.0004,
             help='Learning rate')
@@ -151,7 +151,7 @@ if __name__ == '__main__':
             help='Learning rate decay')
 
     parser.add_argument('--seed', type=int, required=True,
-            help='Which RNG seed to use')
+            help='RNG seed')
     parser.add_argument('--print_every', type=int,
             default=100,
             help='How many steps/mini-batches between printing out the loss')
