@@ -1,12 +1,30 @@
 import torch
 import torch.nn as nn
 
-from char_cnn_rnn.net_modules.fixed_rnn import fixed_rnn
-from char_cnn_rnn.net_modules.fixed_gru import fixed_gru
+from .net_modules.fixed_rnn import fixed_rnn
+from .net_modules.fixed_gru import fixed_gru
 
 
 
 class char_cnn_rnn(nn.Module):
+    '''
+    Char-CNN-RNN model, described in ``Learning Deep Representations of
+    Fine-grained Visual Descriptions``.
+
+    This implementation supports two distinct incarnations of the models for
+    the birds and flowers datasets:
+        * ``Learning Deep Representations of Fine-Grained Visual Descriptions
+            (https://github.com/reedscot/cvpr2016)
+        * ``Generative Adversarial Text-to-Image Synthesis``
+            (https://github.com/reedscot/icml2016)
+
+    Each incarnation contains slight variations on the model architecture, and
+    the architecture also varies depending on the dataset used.
+
+    Arguments:
+        dataset (string): which dataset was used.
+        model_type (string): which incarnation of the model to use.
+    '''
     def __init__(self, dataset, model_type):
         super().__init__()
         assert dataset in ['birds', 'flowers'], \
@@ -78,35 +96,6 @@ class char_cnn_rnn(nn.Module):
         out = self.emb_proj(out)
 
         return out
-
-
-    def load_weights_from_file(self, path):
-        weights = torch.load(path)
-        self.conv1.weight.data = weights['conv1_weight']
-        self.conv1.bias.data = weights['conv1_bias']
-        self.conv2.weight.data = weights['conv2_weight']
-        self.conv2.bias.data = weights['conv2_bias']
-        self.conv3.weight.data = weights['conv3_weight']
-        self.conv3.bias.data = weights['conv3_bias']
-
-        self.rnn.i2h.weight.data = weights['rnn_i2h_weight']
-        self.rnn.i2h.bias.data = weights['rnn_i2h_bias']
-        self.rnn.h2h.weight.data = weights['rnn_h2h_weight']
-        self.rnn.h2h.bias.data = weights['rnn_h2h_bias']
-
-        if self.model_type == 'icml' and self.dataset == 'birds':
-            self.rnn.i2h_update.weight.data = weights['rnn_i2h_update_weight']
-            self.rnn.i2h_update.bias.data = weights['rnn_i2h_update_bias']
-            self.rnn.h2h_update.weight.data = weights['rnn_h2h_update_weight']
-            self.rnn.h2h_update.bias.data = weights['rnn_h2h_update_bias']
-
-            self.rnn.i2h_reset.weight.data = weights['rnn_i2h_reset_weight']
-            self.rnn.i2h_reset.bias.data = weights['rnn_i2h_reset_bias']
-            self.rnn.h2h_reset.weight.data = weights['rnn_h2h_reset_weight']
-            self.rnn.h2h_reset.bias.data = weights['rnn_h2h_reset_bias']
-
-        self.emb_proj.weight.data = weights['emb_proj_weight']
-        self.emb_proj.bias.data = weights['emb_proj_bias']
 
 
 

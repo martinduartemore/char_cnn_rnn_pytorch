@@ -15,6 +15,21 @@ import char_cnn_rnn as ccr
 
 
 def encode_data(net_txt, net_img, data_dir, split, num_txts_eval, batch_size, device):
+    '''
+    Encoder for preprocessed Caltech-UCSD Birds 200-2011 and Oxford 102
+    Category Flowers datasets, used in ``Learning Deep Representations of
+    Fine-grained Visual Descriptions``.
+
+    Arguments:
+        net_txt (torch.nn.Module): text processing network.
+        net_img (torch.nn.Module): image processing network.
+        data_dir (string): path to directory containing dataset files.
+        split (string): which data split to load.
+        num_txts_eval (int): number of textual descriptions to use for each
+            class. The embeddings are averaged per-class.
+        batch_size (int): batch size to split data processing into chunks.
+        device (torch.device): which device to do computation in.
+    '''
     path_split_file = os.path.join(data_dir, split+'classes.txt')
     cls_list = [line.rstrip('\n') for line in open(path_split_file)]
 
@@ -71,6 +86,22 @@ def encode_data(net_txt, net_img, data_dir, split, num_txts_eval, batch_size, de
 
 
 def eval_classify(cls_feats_img, cls_feats_txt, cls_list):
+    '''
+    Classification evaluation.
+
+    Arguments:
+        cls_feats_img (list of torch.Tensor): list containing precomputed image
+            features for each image, separated by class.
+        cls_feats_txt (torch.Tensor): tensor containing precomputed (and
+            averaged) textual features for each class.
+        cls_list (list of string): list of class names.
+
+    Returns:
+        avg_acc (float): percentage of correct classifications for all classes.
+        cls_stats (OrderedDict): dictionary whose keys are class names and each
+            entry is a dictionary containing the 'total' of images for the
+            class and the number of 'correct' classifications.
+    '''
     cls_stats = OrderedDict()
     for i, cls in enumerate(cls_list):
         feats_img = cls_feats_img[i]
@@ -87,7 +118,25 @@ def eval_classify(cls_feats_img, cls_feats_txt, cls_list):
 
 
 
-def eval_retrieval(cls_feats_img, cls_feats_txt, cls_list):
+def eval_retrieval(cls_feats_img, cls_feats_txt, cls_list, k_values=[1,5,10,50]):
+    '''
+    Retrieval evaluation (Average Precision).
+
+    Arguments:
+        cls_feats_img (list of torch.Tensor): list containing precomputed image
+            features for each image, separated by class.
+        cls_feats_txt (torch.Tensor): tensor containing precomputed (and
+            averaged) textual features for each class.
+        cls_list (list of string): list of class names.
+        k_values (list, optional): list of k-values to use for evaluation.
+
+    Returns:
+        map_at_k (OrderedDict): dictionary whose keys are the k_values and the
+            values are the mean Average Precision (mAP) for all classes.
+        cls_stats (OrderedDict): dictionary whose keys are class names and each
+            entry is a dictionary whose keys are the k_values and the values
+            are the Average Precision (AP) per class.
+    '''
     total_num_cls = cls_feats_txt.size(0)
     total_num_img = sum([feats.size(0) for feats in cls_feats_img])
     scores = torch.zeros(total_num_cls, total_num_img)
@@ -104,8 +153,6 @@ def eval_retrieval(cls_feats_img, cls_feats_txt, cls_list):
     for i, s in enumerate(scores):
         _, inds = torch.sort(s, descending=True)
         matches[i] = matches[i, inds]
-
-    k_values = [1, 5, 10, 50]
 
     map_at_k = OrderedDict()
     for k in k_values:
@@ -176,12 +223,12 @@ if __name__ == '__main__':
             help='Data directory')
     parser.add_argument('--eval_split', type=str, required=True,
             choices=['train', 'val', 'test', 'trainval', 'all'],
-            help='File specifying which class labels are used for training')
+            help='Which dataset split to use')
     parser.add_argument('--model_path', type=str, required=True,
             help='Model checkpoint path')
     parser.add_argument('--num_txts_eval', type=int,
             default=0,
-            help='Number of texts to use per class (0 = use all available)')
+            help='Number of texts to use per class (0 = use all)')
     parser.add_argument('--print_class_stats', type=bool,
             default=True,
             help='Whether to print per class statistics or not')

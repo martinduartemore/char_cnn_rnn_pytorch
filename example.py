@@ -1,37 +1,37 @@
 import argparse
 import torch
-import char_cnn_rnn as ccr
 
 from dataset import MultimodalDataset
+
+import char_cnn_rnn as ccr
+from utils import extract_char_cnn_rnn_weights
 
 
 
 def main(args):
-    # extract weights from original models using
-    # ccr.extract_char_cnn_rnn_weights()
-    # check function for details
-
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    # create an instance of the Char-CNN-RNN model and load extracted weights from file
+    # extract weights from original models
+    net_state_dict = extract_char_cnn_rnn_weights(args.torch_model_path,
+            args.dataset, args.model_type)
+    # save weights for later and load with torch.load()
+    #torch.save(net_state_dict, args.weights_out_path)
+
+    # create Char-CNN-RNN model and load weights
     net = ccr.char_cnn_rnn(args.dataset, args.model_type)
-    net.load_weights_from_file(args.weights_path)
+    #net.load_state_dict(torch.load(args.weights_out_path))
+    net.load_state_dict(net_state_dict)
     net = net.to(device)
-    #print(net)
+    net.eval()
+    print(net)
 
     # prepare text and run it through model
+    # the default maximum text length is 201
     txt = 'Text description here'
     txt = ccr.prepare_text(txt, max_str_len=201)
     txt = txt.unsqueeze(0).to(device)
     out = net(txt)
     print(out.shape)
-
-    loader = MultimodalDataset('/A/martin/datasets/birds_dataset/cvpr2016_cub',
-            'trainval')
-    img, txt = loader[0]
-    test1 = ccr.onehot_to_labelvec(txt)
-    test2 = ccr.labelvec_to_str(test1)
-    print(test2)
 
 
 
@@ -39,12 +39,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, required=True,
             choices=['birds', 'flowers'],
-            help='Dataset type (birds|flowers)')
+            help='Dataset type')
     parser.add_argument('--model_type', type=str, required=True,
             choices=['cvpr', 'icml'],
-            help='Model type (cvpr|icml)')
-    parser.add_argument('--weights_path', type=str, required=True,
-            help='Path to model weights file')
+            help='Model type')
+    parser.add_argument('--torch_model_path', type=str, required=True,
+            help='Path to original Torch model')
+    #parser.add_argument('--weights_out_path', type=str, required=True,
+    #        help='Path to save extracted weights')
 
     args = parser.parse_args()
     main(args)
