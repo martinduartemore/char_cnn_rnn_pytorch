@@ -16,7 +16,7 @@ This implementation requires PyTorch >= 1.1.0 and Python 3. Check
 `requirements.txt` file for information on other packages.
 
 
-## Training and Evaluation (Birds and Flowers)
+## Training and Evaluation
 The `scripts` folder contains bash scripts that reproduce the original training
 and evaluation procedures.
 
