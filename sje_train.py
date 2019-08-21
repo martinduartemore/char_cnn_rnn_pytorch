@@ -12,8 +12,6 @@ from torch.utils.data import DataLoader
 from utils import rng_init, init_weights
 import char_cnn_rnn as ccr
 
-from sje_eval import encode_data, eval_classify, eval_retrieval
-
 
 
 def sje_loss(feat1, feat2):
