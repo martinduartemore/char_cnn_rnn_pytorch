@@ -32,7 +32,7 @@ def encode_data(net_txt, net_img, data_dir, split, num_txts_eval, batch_size, de
         data_dir (string): path to directory containing dataset files.
         split (string): which data split to load.
         num_txts_eval (int): number of textual descriptions to use for each
-            class. The embeddings are averaged per-class.
+            class (0 = use all). The embeddings are averaged per-class.
         batch_size (int): batch size to split data processing into chunks.
         device (torch.device): which device to do computation in.
 
