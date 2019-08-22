@@ -20,6 +20,12 @@ def encode_data(net_txt, net_img, data_dir, split, num_txts_eval, batch_size, de
     Category Flowers datasets, used in ``Learning Deep Representations of
     Fine-grained Visual Descriptions``.
 
+    Warning: if you decide to not use all sentences (i.e., num_txts_eval > 0),
+    sentences will be randomly sampled and their features will be averaged to
+    provide a class representation. This means that the evaluation procedures
+    should be performed multiple times (using different seeds) to account for
+    this randomness.
+
     Arguments:
         net_txt (torch.nn.Module): text processing network.
         net_img (torch.nn.Module): image processing network.
@@ -29,6 +35,13 @@ def encode_data(net_txt, net_img, data_dir, split, num_txts_eval, batch_size, de
             class. The embeddings are averaged per-class.
         batch_size (int): batch size to split data processing into chunks.
         device (torch.device): which device to do computation in.
+
+    Returns:
+        cls_feats_img (list of torch.Tensor): list containing precomputed image
+            features for each image, separated by class.
+        cls_feats_txt (torch.Tensor): tensor containing precomputed (and
+            averaged) textual features for each class.
+        cls_list (list of string): list of class names.
     '''
     path_split_file = os.path.join(data_dir, split+'classes.txt')
     cls_list = [line.rstrip('\n') for line in open(path_split_file)]
@@ -171,7 +184,7 @@ def eval_retrieval(cls_feats_img, cls_feats_txt, cls_list, k_values=[1,5,10,50])
 
 def main(args):
     rng_init(args.seed)
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = 'cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu'
     net_txt = ccr.char_cnn_rnn(args.dataset, args.model_type)
     net_txt.load_state_dict(torch.load(args.model_path, map_location=device))
     net_txt = net_txt.to(device)
@@ -211,19 +224,18 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--seed', type=int, required=True,
-            help='Which RNG seed to use')
     parser.add_argument('--dataset', type=str, required=True,
             choices=['birds', 'flowers'],
-            help='Dataset type (birds|flowers)')
+            help='Dataset type')
     parser.add_argument('--model_type', type=str, required=True,
             choices=['cvpr', 'icml'],
-            help='Model type (cvpr|icml)')
+            help='Model type')
     parser.add_argument('--data_dir', type=str, required=True,
             help='Data directory')
     parser.add_argument('--eval_split', type=str, required=True,
             choices=['train', 'val', 'test', 'trainval', 'all'],
             help='Which dataset split to use')
+
     parser.add_argument('--model_path', type=str, required=True,
             help='Model checkpoint path')
     parser.add_argument('--num_txts_eval', type=int,
@@ -235,6 +247,12 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int,
             default=40,
             help='Evaluation batch size')
+
+    parser.add_argument('--seed', type=int, required=True,
+            help='Which RNG seed to use')
+    parser.add_argument('--use_gpu', type=bool,
+            default=True,
+            help='Whether or not to use GPU')
 
     args = parser.parse_args()
     main(args)

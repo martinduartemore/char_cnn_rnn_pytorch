@@ -1,8 +1,9 @@
 python3 sje_train.py \
     --seed 123 \
+    --use_gpu True \
     --dataset birds \
     --model_type icml \
-    --data_dir /A/martin/datasets/birds_dataset/cvpr2016_cub \
+    --data_dir data/cvpr2016_cub \
     --train_split trainval \
     --learning_rate 0.0007 \
     --symmetric True \

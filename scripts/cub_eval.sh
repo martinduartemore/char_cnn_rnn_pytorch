@@ -1,8 +1,9 @@
 python3 sje_eval.py \
     --seed 123 \
+    --use_gpu True \
     --dataset birds \
     --model_type icml \
-    --data_dir /A/martin/datasets/birds_dataset/cvpr2016_cub \
+    --data_dir data/cvpr2016_cub \
     --eval_split test \
     --num_txts_eval 0 \
     --print_class_stats True \

@@ -1,8 +1,9 @@
 python3 sje_train.py \
     --seed 123 \
+    --use_gpu True \
     --dataset flowers \
     --model_type cvpr \
-    --data_dir /A/martin/datasets/flowers_dataset/cvpr2016_flowers \
+    --data_dir data/cvpr2016_flowers \
     --train_split trainval \
     --learning_rate 0.0007 \
     --symmetric True \

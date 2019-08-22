@@ -1,8 +1,9 @@
 python3 sje_eval.py \
     --seed 123 \
+    --use_gpu True \
     --dataset flowers \
     --model_type cvpr \
-    --data_dir /A/martin/datasets/flowers_dataset/cvpr2016_flowers \
+    --data_dir data/cvpr2016_flowers \
     --eval_split test \
     --num_txts_eval 0 \
     --print_class_stats True \

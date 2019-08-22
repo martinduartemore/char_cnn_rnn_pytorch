@@ -43,7 +43,7 @@ def sje_loss(feat1, feat2):
 
 def main(args):
     rng_init(args.seed)
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = 'cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu'
     dataset = MultimodalDataset(args.data_dir, args.train_split)
     loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True,
             num_workers=1, pin_memory=True)
@@ -51,8 +51,8 @@ def main(args):
 
     os.makedirs(os.path.join(args.checkpoint_dir, args.save_file), exist_ok=True)
     timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-    model_name = '{}_{:.5f}_{}_{}_{}.pth'.format(args.save_file, args.learning_rate,
-            args.symmetric, args.train_split, timestamp)
+    model_name = '{}_{:.5f}_{}_{}_{}.pth'.format(args.save_file,
+            args.learning_rate, args.symmetric, args.train_split, timestamp)
     ckpt_path = os.path.join(args.checkpoint_dir, args.save_file, model_name)
     writer = SummaryWriter(os.path.join(args.checkpoint_dir, args.save_file))
 
@@ -152,6 +152,9 @@ if __name__ == '__main__':
 
     parser.add_argument('--seed', type=int, required=True,
             help='RNG seed')
+    parser.add_argument('--use_gpu', type=bool,
+            default=True,
+            help='Whether or not to use GPU')
     parser.add_argument('--print_every', type=int,
             default=100,
             help='How many steps/mini-batches between printing out the loss')
