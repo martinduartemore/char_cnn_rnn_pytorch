@@ -99,7 +99,7 @@ class char_cnn_rnn(nn.Module):
 
 
 
-def prepare_text(string, max_str_len):
+def prepare_text(string, max_str_len=201):
     '''
     Converts a text description from string format to one-hot tensor format.
     '''

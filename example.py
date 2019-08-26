@@ -26,9 +26,9 @@ def main(args):
     print(net)
 
     # prepare text and run it through model
-    # the default maximum text length is 201
+    # default maximum text length is 201 characters (truncated after that)
     txt = 'Text description here'
-    txt = ccr.prepare_text(txt, max_str_len=201)
+    txt = ccr.prepare_text(txt)
     txt = txt.unsqueeze(0).to(device)
     out = net(txt)
     print(out.shape)
