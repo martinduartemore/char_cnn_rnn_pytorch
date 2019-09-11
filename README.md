@@ -30,6 +30,9 @@ and evaluation procedures.
 
 
 ## Using Original Weights
+This implementation currently only accepts the original model weights for the
+birds and flowers datasets.
+
 1. Download the pretrained Char-CNN-RNN models from the incarnation you desire:
     * [reed_cvpr2016](https://github.com/reedscot/cvpr2016)
     * [reed_icml2016](https://github.com/reedscot/icml2016)
@@ -45,5 +48,6 @@ datasets.
 
 
 ## TODOs
+* Add MS-COCO dataset (used in ICML paper)
 * Add instructions on how to process custom datasets.
 * Add evaluation visualization
