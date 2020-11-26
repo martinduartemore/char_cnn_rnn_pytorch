@@ -46,8 +46,22 @@ using `Char-CNN-RNN` models without relying on precomputed embeddings, which is
 especially handy for testing models with novel image descriptions or new
 datasets.
 
+## Using Custom Datasets
+To use custom datasets, you will have to create a PyTorch Dataset, which should
+load an preprocess instances (check [`dataset.py`](dataset.py) for
+inspiration).  **The original preprocessing steps for images and text are
+described in Section 5 of the [original
+paper](https://arxiv.org/abs/1605.05395)**. Your dataset should return a
+dictionary containing the following information:
+* `img`: Image data. In the original implementation, this is a 1024-dimensional
+  feature vector. The dimensions of image data and processed text data
+  (`Char-CNN-RNN` output) **must** match.
+* `txt`: Textual data. Your dataset should return a one-hot representation
+  (check the text utility functions in
+  [`char_cnn_rnn/char_cnn_rnn.py`](char_cnn_rnn/char_cnn_rnn.py)). The
+  characters allowed are lowercase alphabetical and punctuation.
+
 
 ## TODOs
 * Add MS-COCO dataset (used in ICML paper)
-* Add instructions on how to process custom datasets.
 * Add evaluation visualization
